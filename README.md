@@ -1,5 +1,24 @@
 # Dev Log 11/21/25
 
+## How we satisfied the software requirements
+1. It is built using a platform (i.e. engine, framework, language) that does not already provide support for 3D rendering and physics simulation.
+    - The platform we are using is Typescript and Vite which does not have 3D rendering and physics support natively.
+2. It uses a third-party 3D rendering library.
+    - Three.js provides a flexible WebGL framework that fully supports 3D environments.
+3. It uses a third-party physics simulation library. We are using Cannon.es.  
+4. The playable prototype presents the player with a simple physics-based puzzle.
+    - The simple physics-based puzzle is a portal-style puzzle requiring the block to be placed on a floor button. The Dynamic block object has 5 kg mass.
+5. The player is able to exert some control over the simulation in a way that allows them to succeed or fail at the puzzle.
+    - There are mouse-based pickup and throw mechanics. The success for the puzzle is them pressing the button and proceeding. The failure for the puzzle is the button not being pressed.
+6. The game detects success or failure and reports this back to the player using the game's graphics.
+    - The button color will shift from red to green to indicate success. The button color will remain red which will signify failure.
+7. The codebase for the prototype must include some before-commit automation that helps developers.
+    - 
+8. The codebase for the prototype must include some post-push automation that helps developers
+
+## Reflection
+Our team's plan changed slightly since team formation. Our initial thought that wasn't reflected in our initial devlog that React.js, Three.js, and Ammo.js would be complex to combine so we scrapped the idea. We reconsidered using React.js and Ammo.js and instead went with Typescript, Vite, Three.js and Cannon-es.
+
 ## Introducing the team
 
 ### Tools Lead: Jenalee Nguyen
