@@ -5,7 +5,8 @@
     - The platform we are using is Typescript and Vite which does not have 3D rendering and physics support natively.
 2. It uses a third-party 3D rendering library.
     - Three.js provides a flexible WebGL framework that fully supports 3D environments.
-3. It uses a third-party physics simulation library. We are using Cannon.es.  
+3. It uses a third-party physics simulation library.
+    - We are using Cannon.es.  
 4. The playable prototype presents the player with a simple physics-based puzzle.
     - The simple physics-based puzzle is a portal-style puzzle requiring the block to be placed on a floor button. The Dynamic block object has 5 kg mass.
 5. The player is able to exert some control over the simulation in a way that allows them to succeed or fail at the puzzle.
