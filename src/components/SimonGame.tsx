@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { Text } from '@react-three/drei';
 import { useGameStore } from '../hooks/useGameStore';
 import { useKeyboard } from '../hooks/useKeyboard';
+import { useTheme } from '../hooks/useTheme';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -121,6 +122,7 @@ export function SimonGame({ position, zoneSize }: SimonGameProps) {
   // --------------------------------------------------------------------------
   const { camera } = useThree();
   const { keys, resetInteract } = useKeyboard();
+  const { isDarkMode } = useTheme();
   
   // GAME STATE REFERENCES
   // --------------------------------------------------------------------------
@@ -381,10 +383,13 @@ export function SimonGame({ position, zoneSize }: SimonGameProps) {
         </>
       )}
 
-      {/* ZONE VISUALIZATION */}
       <mesh position={[position[0], position[1] + 0.01, position[2]]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[zoneSize[0], zoneSize[2]]} />
-        <meshBasicMaterial color="#9966ff" transparent opacity={0.2} />
+        <meshBasicMaterial 
+          color={isDarkMode ? "#aa88ff" : "#9966ff"} // Theme-aware zone color
+          transparent 
+          opacity={0.2} 
+        />
       </mesh>
     </group>
   );
