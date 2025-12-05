@@ -4,6 +4,7 @@ import GUI from 'lil-gui';
 import type { RoomType } from '../types';
 import { useGameStore } from '../hooks/useGameStore';
 import { PLAYER_CONFIG, PHYSICS_CONFIG } from '../config/rooms';
+import { useTheme } from '../hooks/useTheme';
 
 // ============================================================================
 // DEBUG GUI COMPONENT
@@ -12,8 +13,10 @@ export function DebugGUI() {
   
   // HOOKS & STATE
   const guiRef = useRef<GUI | null>(null);
+  const themeStateRef = useRef<{ darkMode: boolean } | null>(null);
   const { camera } = useThree();
   const { currentRoom, setCurrentRoom, money, setMoney } = useGameStore();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   // GUI INITIALIZATION & SETUP
   useEffect(() => {
@@ -127,13 +130,40 @@ export function DebugGUI() {
     roomFolder.close();
 
     // ========================================================================
+    // THEME SETTINGS FOLDER
+    // ========================================================================
+    const themeFolder = gui.addFolder('Theme');
+    const themeState = { darkMode: isDarkMode };
+    themeStateRef.current = themeState;
+    
+    // Theme toggle switch
+    themeFolder.add(themeState, 'darkMode')
+      .name('Dark Mode')
+      .listen() // Auto-update display
+      .onChange((value: boolean) => {
+        if (value !== isDarkMode) {
+          toggleTheme();
+        }
+      });
+    
+    themeFolder.close();
+
+    // ========================================================================
     // CLEANUP FUNCTION
     // ========================================================================
     return () => {
       gui.destroy();
       guiRef.current = null;
+      themeStateRef.current = null;
     };
-  }, [camera, currentRoom, setCurrentRoom, money, setMoney]);
+  }, [camera, currentRoom, setCurrentRoom, money, setMoney, toggleTheme, isDarkMode]);
+
+  // Update theme state in GUI when theme changes
+  useEffect(() => {
+    if (themeStateRef.current) {
+      themeStateRef.current.darkMode = isDarkMode;
+    }
+  }, [isDarkMode]);
 
   // RENDER
   return null; // GUI is DOM-based, no 3D render

@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { useTheme } from '../hooks/useTheme.tsx';
+import { useEffect, useRef, useMemo, type RefObject } from 'react';
+import { useTheme } from '../hooks/useTheme';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import type { RoomConfig } from '../types';
-import type { ThemeColors } from '../hooks/useTheme.tsx';
+import type { ThemeColors } from '../hooks/useTheme';
 import { Portal } from './Portal';
 import { MiniGameZone } from './MiniGameZone';
 import { DiceGame } from './DiceGame';
@@ -19,8 +19,8 @@ interface RoomProps {
   addBody: (body: CANNON.Body) => void;
   removeBody: (body: CANNON.Body) => void;
   clearBodies: () => void;
-  groundMaterial: React.MutableRefObject<CANNON.Material | null>;
-  wallMaterial: React.MutableRefObject<CANNON.Material | null>;
+  groundMaterial: RefObject<CANNON.Material | null>;
+  wallMaterial: RefObject<CANNON.Material | null>;
 }
 
 // ============================================================================
@@ -43,9 +43,15 @@ export function Room({
   // THEME
   const { colors } = useTheme();
   
-  // THEME-BASED COLORS (Replace the props with theme colors)
-  const themeFloorColor = getRoomColor(config.id, 'floor', colors);
-  const themeWallColor = getRoomColor(config.id, 'wall', colors);
+  // THEME-BASED COLORS (Memoize to prevent unnecessary re-renders)
+  const themeFloorColor = useMemo(
+    () => getRoomColor(config.id, 'floor', colors),
+    [config.id, colors]
+  );
+  const themeWallColor = useMemo(
+    () => getRoomColor(config.id, 'wall', colors),
+    [config.id, colors]
+  );
 
   // ==========================================================================
   // PHYSICS SETUP EFFECT

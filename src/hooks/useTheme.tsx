@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 // ============================================================================
 // TYPES
@@ -120,62 +120,72 @@ const DARK_THEME: ThemeColors = {
 export function useTheme() {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const [isDarkMode, setIsDarkMode] = useState(prefersDark);
-  const [theme, setTheme] = useState<ThemeColors>(prefersDark ? DARK_THEME : LIGHT_THEME);
+  
+  // Memoize theme object to prevent unnecessary re-renders
+  const theme = useMemo<ThemeColors>(
+    () => isDarkMode ? DARK_THEME : LIGHT_THEME,
+    [isDarkMode]
+  );
 
-  // Detect system preference
+  // Update CSS variables based on current theme
   useEffect(() => {
-    const updateCSSVars = (themeColors: ThemeColors) => {
-      const root = document.documentElement;
-      
-      // UI Colors
-      root.style.setProperty('--ui-bg-primary', themeColors.uiBgPrimary);
-      root.style.setProperty('--ui-bg-secondary', themeColors.uiBgSecondary);
-      root.style.setProperty('--ui-text-primary', themeColors.uiTextPrimary);
-      root.style.setProperty('--ui-text-secondary', themeColors.uiTextSecondary);
-      root.style.setProperty('--ui-accent', themeColors.uiAccent);
-      root.style.setProperty('--ui-border', themeColors.uiBorder);
-      
-      // Shadows adjust based on theme
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (isDark) {
-        root.style.setProperty('--ui-shadow-sm', '0 2px 4px rgba(0, 0, 0, 0.4)');
-        root.style.setProperty('--ui-shadow-md', '0 4px 8px rgba(0, 0, 0, 0.5)');
-        root.style.setProperty('--ui-shadow-lg', '0 8px 16px rgba(0, 0, 0, 0.6)');
-        root.style.setProperty('--ui-panel-bg', 'rgba(30, 30, 30, 0.95)');
-        root.style.setProperty('--ui-panel-border', 'rgba(255, 255, 255, 0.1)');
-      } else {
-        root.style.setProperty('--ui-shadow-sm', '0 2px 4px rgba(0, 0, 0, 0.1)');
-        root.style.setProperty('--ui-shadow-md', '0 4px 8px rgba(0, 0, 0, 0.15)');
-        root.style.setProperty('--ui-shadow-lg', '0 8px 16px rgba(0, 0, 0, 0.2)');
-        root.style.setProperty('--ui-panel-bg', 'rgba(255, 255, 255, 0.95)');
-        root.style.setProperty('--ui-panel-border', 'rgba(0, 0, 0, 0.1)');
-      }
+    // Batch CSS updates in requestAnimationFrame to prevent layout thrashing
+    const updateCSSVars = () => {
+      requestAnimationFrame(() => {
+        const root = document.documentElement;
+        
+        // UI Colors
+        root.style.setProperty('--ui-bg-primary', theme.uiBgPrimary);
+        root.style.setProperty('--ui-bg-secondary', theme.uiBgSecondary);
+        root.style.setProperty('--ui-text-primary', theme.uiTextPrimary);
+        root.style.setProperty('--ui-text-secondary', theme.uiTextSecondary);
+        root.style.setProperty('--ui-accent', theme.uiAccent);
+        root.style.setProperty('--ui-border', theme.uiBorder);
+        
+        // Shadows adjust based on theme mode
+        if (isDarkMode) {
+          root.style.setProperty('--ui-shadow-sm', '0 2px 4px rgba(0, 0, 0, 0.4)');
+          root.style.setProperty('--ui-shadow-md', '0 4px 8px rgba(0, 0, 0, 0.5)');
+          root.style.setProperty('--ui-shadow-lg', '0 8px 16px rgba(0, 0, 0, 0.6)');
+          root.style.setProperty('--ui-panel-bg', 'rgba(30, 30, 30, 0.95)');
+          root.style.setProperty('--ui-panel-border', 'rgba(255, 255, 255, 0.1)');
+        } else {
+          root.style.setProperty('--ui-shadow-sm', '0 2px 4px rgba(0, 0, 0, 0.1)');
+          root.style.setProperty('--ui-shadow-md', '0 4px 8px rgba(0, 0, 0, 0.15)');
+          root.style.setProperty('--ui-shadow-lg', '0 8px 16px rgba(0, 0, 0, 0.2)');
+          root.style.setProperty('--ui-panel-bg', 'rgba(255, 255, 255, 0.95)');
+          root.style.setProperty('--ui-panel-border', 'rgba(0, 0, 0, 0.1)');
+        }
+      });
     };
     
+    // Initial setup
+    updateCSSVars();
+    
+    // Listen for system preference changes (optional - can be disabled if manual toggle is preferred)
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleChange = (e: MediaQueryListEvent) => {
       setIsDarkMode(e.matches);
-      setTheme(e.matches ? DARK_THEME : LIGHT_THEME);
-      
-      // Update CSS variables
-      updateCSSVars(e.matches ? DARK_THEME : LIGHT_THEME);
+      updateCSSVars();
     };
     
-    // Initial setup
-    updateCSSVars(theme);
-    
-    // Listen for changes
     mediaQuery.addEventListener('change', handleChange);
     
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
     };
-  }, [theme]);
+  }, [theme, isDarkMode]);
+
+  // Toggle theme manually - use callback to prevent recreation
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode(prev => !prev);
+  }, []);
 
   return {
     isDarkMode,
     theme,
     colors: theme,
+    toggleTheme,
   };
 }

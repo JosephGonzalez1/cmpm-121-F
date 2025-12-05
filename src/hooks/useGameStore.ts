@@ -404,6 +404,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       isHoldingBall: false,
       throwPower: 0,
       isChargingThrow: false,
+      basketballBetPlaced: false,
+      basketballBetAmount: 0,
+      lastBasketballResult: null,
     });
   },
   
