@@ -275,7 +275,7 @@ export function SimonGame({ position, zoneSize }: SimonGameProps) {
       // Check each button for click intersection
       for (let i = 0; i < buttonPositions.length; i++) {
         const btnPos = new THREE.Vector3(...buttonPositions[i]);
-        btnPos.y += 0.1; // Offset to center of button
+        btnPos.y += 0.1; 
         
         const toButton = btnPos.clone().sub(camera.position);
         const distance = toButton.length();
