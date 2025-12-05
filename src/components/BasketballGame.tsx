@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { useGameStore } from '../hooks/useGameStore';
 import { useKeyboard } from '../hooks/useKeyboard';
+import { useTheme } from '../hooks/useTheme';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -35,6 +36,8 @@ const GROUNDED_CHECK_TIME = 1;
 // HOOP COMPONENT
 // ----------------------------------------------------------------------------
 function Hoop({ position }: { position: [number, number, number] }) {
+  const { colors } = useTheme();
+
   return (
     <group position={position} rotation={[0, Math.PI, 0]}>
       {/* Backboard */}
@@ -52,7 +55,7 @@ function Hoop({ position }: { position: [number, number, number] }) {
       {/* Rim */}
       <mesh position={[0, HOOP_HEIGHT, -0.3]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[HOOP_RADIUS, 0.02, 16, 32]} />
-        <meshBasicMaterial color="#ff6600" />
+        <meshBasicMaterial color={colors.hoopColor} />
       </mesh>
 
       {/* Pole */}
@@ -73,10 +76,12 @@ function Hoop({ position }: { position: [number, number, number] }) {
 // BASKETBALL COMPONENT
 // ----------------------------------------------------------------------------
 function Basketball({ ballRef }: { ballRef: (mesh: THREE.Mesh | null) => void }) {
+  const { colors } = useTheme();
+
   return (
-    <mesh ref={ballRef}>
-      <sphereGeometry args={[BALL_RADIUS, 32, 32]} />
-      <meshBasicMaterial color="#ff6600" />
+     <mesh ref={ballRef}>
+      <sphereGeometry args={[0.12, 32, 32]} />
+      <meshBasicMaterial color={colors.basketballColor} />
       
       <lineSegments>
         <edgesGeometry args={[new THREE.SphereGeometry(BALL_RADIUS + 0.001, 8, 8)]} />
@@ -95,6 +100,7 @@ export function BasketballGame({ position, zoneSize }: BasketballGameProps) {
   // --------------------------------------------------------------------------
   const { camera, gl } = useThree();
   const { keys, resetInteract } = useKeyboard();
+  const { isDarkMode } = useTheme();
   
   // GAME STORE STATE
   // --------------------------------------------------------------------------
@@ -628,7 +634,12 @@ export function BasketballGame({ position, zoneSize }: BasketballGameProps) {
       {/* Trajectory Line */}
       <line ref={(line) => { trajectoryLineRef.current = line as unknown as THREE.Line; }}>
         <bufferGeometry />
-        <lineBasicMaterial color="#ffff00" linewidth={2} transparent opacity={0.8} />
+        <lineBasicMaterial 
+          color={isDarkMode ? "#ffff88" : "#ffff00"} // Brighter in dark mode
+          linewidth={2} 
+          transparent 
+          opacity={0.8} 
+        />
       </line>
       
       {/* Pickup Circle */}
