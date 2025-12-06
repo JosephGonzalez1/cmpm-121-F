@@ -319,6 +319,8 @@ export function DiceGame({ position, zoneSize }: DiceGameProps) {
     if (isNear && keys.current.interact && isLocked && !isMiniGameActive) {
       resetInteract();
       setIsMiniGameActive(true);
+      // Mark minigame1 as played
+      useGameStore.getState().markMinigamePlayed('minigame1');
       document.exitPointerLock();
     }
   }, [

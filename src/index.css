@@ -1090,3 +1090,107 @@ textarea {
   color: var(--ui-text-primary);
   margin-bottom: 25px;
 }
+
+/* ============================================================================
+   GAME CLEAR SCREEN
+============================================================================ */
+.game-clear-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--ui-success) 5%, var(--ui-panel-bg) 95%);
+  border: 3px solid color-mix(in srgb, var(--ui-success) 60%, transparent 40%);
+  border-radius: 20px;
+  padding: 50px 60px;
+  text-align: center;
+  box-shadow: var(--ui-shadow-lg);
+  z-index: 1001;
+  pointer-events: auto;
+  backdrop-filter: blur(15px);
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.game-clear-screen h1 {
+  font-size: 48px;
+  color: var(--ui-success);
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.game-clear-screen .clear-message {
+  font-size: 20px;
+  color: var(--ui-text-primary);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.game-clear-screen .clear-stats {
+  background: color-mix(in srgb, var(--ui-success) 10%, transparent 90%);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.game-clear-screen .stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.game-clear-screen .stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.game-clear-screen .stat-label {
+  font-size: 18px;
+  color: var(--ui-text-secondary);
+}
+
+.game-clear-screen .stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--ui-success);
+}
+
+.game-clear-screen .clear-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.game-clear-screen .restart-button {
+  background: linear-gradient(135deg, var(--ui-success), color-mix(in srgb, var(--ui-success) 80%, black 20%));
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-clear-screen .restart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ui-success) 90%, white 10%), var(--ui-success));
+}
+
+.game-clear-screen .restart-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}

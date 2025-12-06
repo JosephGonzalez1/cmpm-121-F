@@ -49,6 +49,8 @@ export function UI() {
     simonGameMessage,
     startSimonGame,
     exitSimonGame,
+    resetGame,
+    isGameCleared,
   } = useGameStore();
   
   // LOCAL STATE
@@ -198,7 +200,18 @@ export function UI() {
 
       {isLocked && nearPortal && !isNearMiniGame && !isMiniGameActive && (
         <div className="interaction-hint">
-          [E] {nearPortal.label}
+          {nearPortal.targetRoom === 'minigame4' && !isGameCleared ? (
+            <>
+              <div style={{ color: '#ff6b6b', marginBottom: '5px' }}>
+                🔒 Locked
+              </div>
+              <div style={{ fontSize: '14px', color: '#999' }}>
+                Play all minigames to unlock
+              </div>
+            </>
+          ) : (
+            `[E] ${nearPortal.label}`
+          )}
         </div>
       )}
 
@@ -505,6 +518,40 @@ export function UI() {
             </button>
           </div>
         </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+         GAME CLEAR SCREEN (Empty Room)
+      ===================================================================== */}
+      {currentRoom === 'minigame4' && isGameCleared && (
+        <div className="fullscreen-overlay">
+          <div className="game-clear-screen">
+            <h1>🎉 Game Clear! 🎉</h1>
+            <p className="clear-message">
+              Congratulations! You have played all minigames!
+            </p>
+            <div className="clear-stats">
+              <div className="stat-item">
+                <span className="stat-label">Final Money:</span>
+                <span className="stat-value">${money}</span>
+              </div>
+            </div>
+            <div className="clear-buttons">
+              <button 
+                className="restart-button"
+                onClick={() => {
+                  resetGame();
+                  setTimeout(() => {
+                    const canvas = document.querySelector('canvas');
+                    canvas?.requestPointerLock();
+                  }, 100);
+                }}
+              >
+                Restart Game
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

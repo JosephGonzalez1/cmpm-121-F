@@ -42,6 +42,14 @@ interface GameStore {
   // ECONOMY STATE
   money: number;
 
+  // MINIGAME COMPLETION STATE
+  playedMinigames: {
+    minigame1: boolean;
+    minigame2: boolean;
+    minigame3: boolean;
+  };
+  isGameCleared: boolean;
+
   // SAVE SYSTEM STATE
   currentSaveId: string | null;
   autoSaveEnabled: boolean;
@@ -162,6 +170,13 @@ interface GameStore {
   setSimonShowingPattern: (showing: boolean) => void;
   setSimonCanClick: (canClick: boolean) => void;
   setSimonGameMessage: (message: string) => void;
+  
+  // ========================================================================
+  // MINIGAME COMPLETION ACTIONS
+  // ========================================================================
+  markMinigamePlayed: (minigameId: 'minigame1' | 'minigame2' | 'minigame3') => void;
+  checkAllMinigamesPlayed: () => boolean;
+  resetGame: () => void;
 }
 
 // ============================================================================
@@ -182,6 +197,14 @@ export const useGameStore = create<GameStore>()(
       
       // ECONOMY STATE
       money: 100,
+
+      // MINIGAME COMPLETION STATE
+      playedMinigames: {
+        minigame1: false,
+        minigame2: false,
+        minigame3: false,
+      },
+      isGameCleared: false,
 
       // SAVE SYSTEM STATE
       currentSaveId: null,
@@ -627,6 +650,9 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         if (state.money < betAmount || betAmount <= 0) return false;
         
+        // Mark minigame3 as played
+        state.markMinigamePlayed('minigame3');
+        
         set({
           money: state.money - betAmount,
           simonBetAmount: betAmount,
@@ -714,6 +740,86 @@ export const useGameStore = create<GameStore>()(
       setSimonShowingPattern: (showing) => set({ simonIsShowingPattern: showing }),
       setSimonCanClick: (canClick) => set({ simonCanClick: canClick }),
       setSimonGameMessage: (message) => set({ simonGameMessage: message }),
+      
+      // ========================================================================
+      // MINIGAME COMPLETION ACTIONS
+      // ========================================================================
+      markMinigamePlayed: (minigameId) => {
+        set((state) => {
+          const newPlayedMinigames = {
+            ...state.playedMinigames,
+            [minigameId]: true,
+          };
+          
+          // Check if all minigames are played
+          const allPlayed = 
+            newPlayedMinigames.minigame1 && 
+            newPlayedMinigames.minigame2 && 
+            newPlayedMinigames.minigame3;
+          
+          return {
+            playedMinigames: newPlayedMinigames,
+            isGameCleared: allPlayed,
+          };
+        });
+      },
+      
+      checkAllMinigamesPlayed: () => {
+        const state = get();
+        return (
+          state.playedMinigames.minigame1 &&
+          state.playedMinigames.minigame2 &&
+          state.playedMinigames.minigame3
+        );
+      },
+      
+      resetGame: () => {
+        set({
+          currentRoom: 'main',
+          isPlaying: false,
+          nearPortal: null,
+          isLocked: false,
+          playerTeleportTarget: null,
+          money: 100,
+          playedMinigames: {
+            minigame1: false,
+            minigame2: false,
+            minigame3: false,
+          },
+          isGameCleared: false,
+          isNearMiniGame: false,
+          isMiniGameActive: false,
+          diceResult: null,
+          isRolling: false,
+          shouldTriggerRoll: false,
+          currentBet: null,
+          betAmount: 0,
+          lastBetForResult: null,
+          lastBetAmountForResult: 0,
+          isNearBasketball: false,
+          isBasketballActive: false,
+          isHoldingBall: false,
+          throwPower: 0,
+          isChargingThrow: false,
+          basketballScore: 0,
+          basketballAttempts: 0,
+          basketballBetAmount: 0,
+          basketballBetPlaced: false,
+          lastBasketballResult: null,
+          isNearSimon: false,
+          isSimonActive: false,
+          simonBetAmount: 10,
+          simonBetPlaced: false,
+          simonPattern: [],
+          simonPlayerPattern: [],
+          simonScore: 0,
+          simonGameMessage: '',
+          simonIsShowingPattern: false,
+          simonCanClick: false,
+          simonLitButton: null,
+          simonIsGameOver: false,
+        });
+      },
     }),
     {
       name: 'mini3d-game-settings',

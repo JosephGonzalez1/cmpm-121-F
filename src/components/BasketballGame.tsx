@@ -524,6 +524,8 @@ export function BasketballGame({ position, zoneSize }: BasketballGameProps) {
     if (isNear && keys.current.interact && isLocked && !isBasketballActive) {
       resetInteract();
       enterBasketballZone();
+      // Mark minigame2 as played
+      useGameStore.getState().markMinigamePlayed('minigame2');
       document.exitPointerLock();
     }
   }, [camera, position, isNearBasketball, isLocked, keys, resetInteract, setIsNearBasketball, exitGame, isBasketballActive, enterBasketballZone]);

@@ -60,6 +60,7 @@ export function Player({ playerBody, physicsStep }: PlayerProps) {
     isBasketballActive,
     saveGame,
     loadGame,
+    checkAllMinigamesPlayed,
   } = useGameStore();
 
   // ==========================================================================
@@ -316,6 +317,16 @@ export function Player({ playerBody, physicsStep }: PlayerProps) {
     // ------------------------------------------------------------------------
     if (keys.current.interact && nearPortal) {
       resetInteract();
+      
+      // Check if trying to enter minigame4 (empty room)
+      if (nearPortal.targetRoom === 'minigame4') {
+        // Only allow entry if all minigames are played
+        if (!checkAllMinigamesPlayed()) {
+          console.log('You must play all minigames to enter the empty room.');
+          return;
+        }
+      }
+      
       teleportToRoom(nearPortal.targetRoom);
     }
   });
