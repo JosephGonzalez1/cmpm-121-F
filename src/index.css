@@ -154,11 +154,11 @@ textarea {
   box-shadow: var(--ui-shadow-sm);
 }
 
-/* money display (top right) */
+/* money display (top left) */
 .money-display {
   position: absolute;
   top: 20px;
-  right: 20px;
+  left: 20px;
   background: linear-gradient(
     135deg, 
     color-mix(in srgb, var(--ui-warning) 20%, transparent 80%),
